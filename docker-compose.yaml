@@ -1,0 +1,71 @@
+version: "3.9"
+
+# =========================
+# SERVICES
+# =========================
+services:
+  # PostgreSQL (dùng cho AI service - lưu vector)
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: postgres
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER} # user DB
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD} # password DB
+      - POSTGRES_DB=${POSTGRES_DB} # tên database
+    volumes:
+      - pgdata:/var/lib/postgresql/data # lưu data bền vững
+    ports:
+      - "5433:5432" # test local, AI service sẽ kết nối qua network nội bộ
+
+  #  SQL Server (dùng cho backend C#)
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sqlserver
+    environment:
+      - ACCEPT_EULA=Y # bắt buộc cho SQL Server
+      - SA_PASSWORD=${SA_PASSWORD} # password admin
+    volumes:
+      - sqlserverdata:/var/opt/mssql # lưu data bền vững
+    ports:
+      - "1434:1433" # test local, backend sẽ kết nối qua network nội bộ
+
+  #  Backend API (C#)
+  api:
+    build: ./apps/api # build từ source code
+    container_name: api
+    ports:
+      - "5000:5000" # truy cập từ localhost:5000
+    environment:
+      - ASPNETCORE_URLS=${ASPNETCORE_URLS} # cấu hình port trong container
+      - AiService__BaseUrl=${AI_SERVICE_URL} # gọi sang AI service
+      - AiService__TimeoutSeconds=60 # timeout khi gọi AI service
+    depends_on:
+      - sqlserver # đảm bảo DB start trước
+    # Giao tiếp nội bộ qua: http://ai-service:8000
+
+  #  AI Service (Python)
+  ai-service:
+    build: ./apps/ai-server
+    container_name: ai-service
+    ports:
+      - "8000:8000" # test local
+    environment:
+      - BACKEND_API_URL=${BACKEND_API_URL} # gọi ngược về API
+    depends_on:
+      - postgres # cần DB vector
+    # Giao tiếp nội bộ qua: http://api:5000
+
+  #  Frontend (React / NextJS / Vite...)
+  web:
+    build: ./apps/web
+    container_name: web
+    ports:
+      - "3000:3000" # truy cập web tại localhost:3000
+    # Nếu FE gọi API → dùng http://localhost:5000
+
+# =========================
+# VOLUMES (lưu dữ liệu DB)
+# =========================
+volumes:
+  pgdata:
+  sqlserverdata:
