@@ -1,0 +1,112 @@
+@import "tailwindcss";
+
+/* Light theme */
+:root {
+  /* Colors */
+  --primary: #10a37f; 
+  --primary-foreground: #ffffff; 
+
+   --secondary: #f1f5f9; 
+  --secondary-foreground: #0f172a; 
+
+  --background: #ffffff;  
+  --foreground: #111827;
+
+  --muted: #6b7280;
+  --border: #e5e7eb;
+
+  --success: #22c55e;
+  --danger: #ef4444;
+
+  /* radius */
+  --radius: 10px;
+
+  /* font */
+  --font-sans: 'Inter', sans-serif;
+  --font-heading: 'Poppins', sans-serif;
+}
+
+/* Dark theme */
+.dark {
+  --primary: #19c37d;
+  --primary-foreground: #ffffff;
+
+  --secondary: #1f2937;
+  --secondary-foreground: #f9fafb;
+
+  --background: #0f172a;
+  --foreground: #f9fafb;
+
+  --muted: #9ca3af;
+  --border: #1f2937;
+
+  --success: #22c55e;
+  --danger: #f87171;
+}
+
+/* =========================
+    BASE STYLES
+========================= */
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+  }
+}
+/* =========================
+    UTILITIES
+========================= */
+
+
+@layer utilities {
+  /* Background */
+  .bg-primary {
+    background-color: var(--primary);
+  }
+
+  .bg-secondary {
+    background-color: var(--secondary);
+  }
+
+  .bg-card {
+    background-color: var(--secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+
+  /* Text */
+  .text-primary {
+    color: var(--primary);
+  }
+
+  .text-primary-foreground {
+    color: var(--primary-foreground);
+  }
+
+  .text-muted {
+    color: var(--muted);
+  }
+
+  /* Border */
+  .border-default {
+    border-color: var(--border);
+  }
+
+  /* Radius */
+  .rounded-base {
+    border-radius: var(--radius);
+  }
+
+  /* Fonts */
+  .font-sans {
+    font-family: var(--font-sans);
+  }
+
+  .font-heading {
+    font-family: var(--font-heading);
+  }
+}
